@@ -15,7 +15,6 @@ import rh.local.kbit.security.UserPrincipal;
 
 
 import javax.validation.Valid;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +80,25 @@ public class UserController {
         return ResponseEntity.ok().body(responsePayload.getJsonPayload());
     }
 
+    @RequestMapping(value = "/user/{userEmail}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteUser(@PathVariable("userEmail") String userEmail) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User u;
+        if (userPrincipal.getRole().equals(RoleName.admin)) {
+            u = userRepository.findUserByEmail(userEmail).orElse(null);
+        } else {
+            if (!userPrincipal.getEmail().equals(userEmail)) {
+                logger.warn("access forbidden, user email is not equal to token and user not in admin group");
+                return ResponseEntity.status(401).body("Forbidden");
+            } else {
+                u = userRepository.findUserByEmail(userPrincipal.getEmail()).orElse(null);
+            }
+        }
+        userRepository.delete(u);
+        return ResponseEntity.ok().body(responsePayload.getJsonPayload());
+    }
+
 
     @GetMapping("/users")
     public ResponseEntity usersList() {
@@ -97,6 +115,5 @@ public class UserController {
             return ResponseEntity.status(401).body("not admin user");
         }
     }
-
 
 }
