@@ -1,27 +1,19 @@
 package rh.local.kbit.payload;
 
 
-public class SignUpRequest {
-    private String email;
-    private String password;
+public class UpdateUserDetails {
+
     private String firstName;
     private String lastName;
 
-    public String getEmail() {
-        return email;
+
+    public UpdateUserDetails(String firstName, String lastName) {
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -38,4 +30,6 @@ public class SignUpRequest {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+
 }

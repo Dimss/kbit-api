@@ -58,6 +58,10 @@ public class UserPrincipal implements UserDetails {
         return getEmail();
     }
 
+    public RoleName getRole() { return role; }
+
+    public void setRole(RoleName role) { this.role = role; }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

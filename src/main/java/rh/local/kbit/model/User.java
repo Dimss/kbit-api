@@ -39,16 +39,17 @@ public class User {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    @NaturalId
     @Column(length = 60)
     private RoleName roleName;
 
     public User() {
     }
 
-    public User(String email, String password) {
+    public User(String email, String password, String firstName, String lastName) {
         this.email = email;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public String getId() {

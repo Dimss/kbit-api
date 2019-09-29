@@ -37,7 +37,7 @@ public class UserRepositoryTests {
 
     @Before
     public void setUp() {
-        User u = new User(email, password);
+        User u = new User(email, password, "", "");
         u.setPassword(passwordEncoder.encode(password));
         testEntityManager.persist(u);
     }
