@@ -9,13 +9,12 @@ pipeline {
         }
     }
     stages {
-        stage("Step One - test") {
+        stage("Run unit tests") {
             steps {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            echo 'Hello world'
-                            echo "${getGitCommitShortHash()}"
+                            sh "mvn test"
 
                         }
                     }
