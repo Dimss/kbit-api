@@ -1,3 +1,7 @@
+def getGitCommitShortHash() {
+    return checkout(scm).GIT_COMMIT.substring(0, 7)
+}
+
 pipeline {
     agent {
         node {
@@ -5,19 +9,20 @@ pipeline {
         }
     }
     stages {
-
-
-        stage("Step One - test ") {
+        stage("Step One - test") {
             steps {
                 script {
-                    sh "echo 'Hello world'"
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo 'Hello world'
+                            echo "${getGitCommitShortHash()}"
+
+                        }
+                    }
                 }
             }
         }
-
-
     }
-
 
     post {
         failure {
@@ -25,7 +30,6 @@ pipeline {
                 openshift.withCluster() {
                     openshift.withProject() {
                         sh "echo 'this is failure catch'"
-
                     }
                 }
             }
