@@ -10,6 +10,9 @@ spec:
   strategy:
     jenkinsPipelineStrategy:
       jenkinsfile:
+      env:
+      - name: "VERSION"
+        value: ""
     type: JenkinsPipeline
   triggers:
   - generic:
