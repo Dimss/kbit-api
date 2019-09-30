@@ -21,6 +21,53 @@ pipeline {
                 }
             }
         }
+        stage("Run static code analysis") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Running static code analysis"
+                        }
+                    }
+                }
+            }
+        }
+        stage("Deploy integration tests dependencies") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Deploying integration tests dependencies"
+
+                        }
+                    }
+                }
+            }
+        }
+        stage("Build & push docker image ") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Deploying integration tests dependencies"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("Executing integration tests") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Deploying integration tests dependencies"
+
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
