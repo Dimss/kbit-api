@@ -27,6 +27,9 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             echo "Running static code analysis"
+                            withSonarQubeEnv('SonarQube1') {
+                                sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar'
+                            }
                         }
                     }
                 }
