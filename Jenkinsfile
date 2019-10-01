@@ -23,11 +23,12 @@ pipeline {
 //        }
         stage("Run static code analysis") {
             steps {
-
-                echo "Running static code analysis"
-                def scannerHome = tool 'SonarScanner 4.0'
-                withSonarQubeEnv('SonarQube1') {
-                    sh 'mvn clean verify sonar:sonar'
+                script {
+                    echo "Running static code analysis"
+                    def scannerHome = tool 'SonarScanner 4.0'
+                    withSonarQubeEnv('SonarQube1') {
+                        sh 'mvn clean verify sonar:sonar'
+                    }
                 }
             }
 
