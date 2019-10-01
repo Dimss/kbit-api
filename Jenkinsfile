@@ -9,31 +9,31 @@ pipeline {
         }
     }
     stages {
-        stage("Run unit tests") {
-            steps {
-                script {
-                    openshift.withCluster() {
-                        openshift.withProject() {
-                            sh "mvn test"
-
-                        }
-                    }
-                }
-            }
-        }
+//        stage("Run unit tests") {
+//            steps {
+//                script {
+//                    openshift.withCluster() {
+//                        openshift.withProject() {
+//                            sh "mvn test"
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
         stage("Run static code analysis") {
             steps {
-                script {
-                    openshift.withCluster() {
-                        openshift.withProject() {
-                            echo "Running static code analysis"
-                            withSonarQubeEnv('SonarQube1') {
-                                sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar'
-                            }
-                        }
-                    }
+//                script {
+//                    openshift.withCluster() {
+//                        openshift.withProject() {
+                echo "Running static code analysis"
+                withSonarQubeEnv('SonarQube1') {
+                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar'
                 }
             }
+//                    }
+//                }
+//            }
         }
         stage("Deploy integration tests dependencies") {
             steps {
