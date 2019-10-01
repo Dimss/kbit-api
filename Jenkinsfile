@@ -9,18 +9,18 @@ pipeline {
         }
     }
     stages {
-//        stage("Run unit tests") {
-//            steps {
-//                script {
-//                    openshift.withCluster() {
-//                        openshift.withProject() {
-//                            sh "mvn test"
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        stage("Run unit tests") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            echo "Hello from ${openshift.cluster()}'s default project: ${openshift.project()}"
+
+                        }
+                    }
+                }
+            }
+        }
         stage("Run static code analysis") {
             steps {
                 script {
