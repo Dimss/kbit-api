@@ -77,7 +77,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-//                            buildImage()
+                            buildImage()
                         }
                     }
                 }
