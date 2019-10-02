@@ -51,14 +51,14 @@ pipeline {
                         openshift.withProject() {
                             def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
                             echo "${scmUrl}"
-//                            def crTemplate = readFile('ocp/tmpl/app-image-build.yaml')
-//                            def models = openshift.process(crTemplate,
-//                                    "-p=IS_NAME=${size}",
-//                                    "-p=IMAGE_NAME=${appName}",
-//                                    "-p=IMAGE_TAG=${namespace}",
-//                                    "-p=GIT_REPO=${image}")
-//                            echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
-//                            openshift.create(models)
+                            def crTemplate = readFile('ocp/tmpl/app-image-build.yaml')
+                            def models = openshift.process(crTemplate,
+                                    "-p=IS_NAME=${env.NAME}-${getGitCommitShortHash()}",
+                                    "-p=IMAGE_NAME=${env.IMAGE_NAME}",
+                                    "-p=IMAGE_TAG=${getGitCommitShortHash()}",
+                                    "-p=GIT_REPO=${scmUrl}")
+                            echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
+                            openshift.create(models)
                         }
                     }
                 }

@@ -11,8 +11,12 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfile:
       env:
+      - name: "NAME"
+        value: "kbit-api"
       - name: "VERSION"
         value: ""
+      - name: "IMAGE_NAME"
+        value: "kbit-api"
     type: JenkinsPipeline
   triggers:
   - generic:
