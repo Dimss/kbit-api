@@ -24,7 +24,7 @@ def deployPg() {
             "-p", "POSTGRESQL_DATABASE=${getPgName()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
     openshift.create(pgModels)
-    def pg = openshift.selector("deploymentconfig/${getPgName()}")
+    def pg = openshift.selector("deploymentconfigs/${getPgName()}")
     pg.untilEach(1) { // We want a minimum of 1 build
 
         echo it.object()
