@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 def getGitCommitShortHash() {
     return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 }
