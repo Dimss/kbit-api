@@ -25,13 +25,16 @@ objects:
     output:
       to:
         kind: "DockerImage"
-        name: "docker.io/dimssss/${IMAGE_NAME}:${IMAGE_TAG}"
+        name: "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
       pushSecret:
         name: ${PUSH_SECRET}
 parameters:
 - name: IS_NAME
   required: true
   value: kbit-api-s2i
+- name: REGISTRY_NAME
+  required: true
+  value: "docker.io/dimssss"
 - name: IMAGE_NAME
   required: true
   value: "kbit-api"

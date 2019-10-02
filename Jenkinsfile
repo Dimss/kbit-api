@@ -8,6 +8,16 @@ def getGitCommitShortHash() {
     return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 }
 
+def deployPg() {
+    def pgModels = openshift.process("openshift//postgresql-ephemeral",
+            "-p", "DATABASE_SERVICE_NAME=${getAppName()}",
+            "-p", "POSTGRESQL_USER=${getAppName()}",
+            "-p", "POSTGRESQL_PASSWORD=${getAppName()}",
+            "-p", "POSTGRESQL_DATABASE=${getAppName()}")
+    openshift.create(pgModels)
+
+}
+
 def getAppName() {
     return "${env.NAME}-${getGitCommitShortHash()}"
 }
@@ -59,39 +69,42 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
-                            echo "${scmUrl}"
-                            def crTemplate = readFile('ocp/tmpl/app-image-build.yaml')
-                            def models = openshift.process(crTemplate,
+                            def bcTemplate = readFile('ocp/tmpl/s2i-bc.yaml')
+                            def models = openshift.process(bcTemplate,
                                     "-p=IS_NAME=${getAppName()}",
+                                    "-p=REGISTRY_NAME=${env.REGISTRY_NAME}",
                                     "-p=IMAGE_NAME=${env.IMAGE_NAME}",
                                     "-p=IMAGE_TAG=${getGitCommitShortHash()}",
-                                    "-p=GIT_REPO=${scmUrl}",
+                                    "-p=GIT_REPO=${scm.getUserRemoteConfigs()[0].getUrl()}",
                                     "-p=GIT_REF=${getGitCommitHash()}")
                             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
                             openshift.create(models)
                             def bc = openshift.selector("buildconfig/${getAppName()}")
                             def build = bc.startBuild()
                             build.logs("-f")
-//                            openshift.delete(models)
                         }
                     }
                 }
             }
         }
-//
-//        stage("Executing integration tests") {
-//            steps {
-//                script {
-//                    openshift.withCluster() {
-//                        openshift.withProject() {
-//                            echo "Deploying integration tests dependencies"
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
+
+        stage("Deploying integration tests dependencies") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            def pgModels = openshift.process("openshift//postgresql-ephemeral",
+                                    "-p", "DATABASE_SERVICE_NAME=${getAppName()}",
+                                    "-p", "POSTGRESQL_USER=${getAppName()}",
+                                    "-p", "POSTGRESQL_PASSWORD=${getAppName()}",
+                                    "-p", "POSTGRESQL_DATABASE=${getAppName()}")
+                            openshift.create(pgModels)
+
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {

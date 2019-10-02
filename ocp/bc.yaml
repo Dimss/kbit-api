@@ -13,8 +13,8 @@ spec:
       env:
       - name: "NAME"
         value: "kbit-api"
-      - name: "VERSION"
-        value: ""
+      - name: "REGISTRY_NAME"
+        value: "docker.io/dimssss"
       - name: "IMAGE_NAME"
         value: "kbit-api"
     type: JenkinsPipeline
