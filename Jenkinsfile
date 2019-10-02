@@ -1,7 +1,15 @@
 import groovy.json.JsonOutput
 
+def getGitCommitHash() {
+    return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
+}
+
 def getGitCommitShortHash() {
     return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+}
+
+def getAppName() {
+    return "${env.NAME}-${getGitCommitShortHash()}"
 }
 
 pipeline {
@@ -55,12 +63,17 @@ pipeline {
                             echo "${scmUrl}"
                             def crTemplate = readFile('ocp/tmpl/app-image-build.yaml')
                             def models = openshift.process(crTemplate,
-                                    "-p=IS_NAME=${env.NAME}-${getGitCommitShortHash()}",
+                                    "-p=IS_NAME=${getAppName()}",
                                     "-p=IMAGE_NAME=${env.IMAGE_NAME}",
                                     "-p=IMAGE_TAG=${getGitCommitShortHash()}",
-                                    "-p=GIT_REPO=${scmUrl}")
+                                    "-p=GIT_REPO=${scmUrl}",
+                                    "-p=GIT_REF=${getGitCommitHash()}")
                             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
                             openshift.create(models)
+                            def bc = openshift.selector("buildconfig/${getAppName()}")
+                            def build = bc.startBuild()
+                            build.logs("-f")
+//                            openshift.delete(models)
                         }
                     }
                 }
