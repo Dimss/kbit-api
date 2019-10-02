@@ -1,5 +1,5 @@
 def getGitCommitShortHash() {
-    return checkout(scm).GIT_COMMIT.substring(0, 7)
+    return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 }
 
 pipeline {
