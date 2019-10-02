@@ -24,13 +24,12 @@ def deployPg() {
             "-p", "POSTGRESQL_DATABASE=${getPgName()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
     openshift.create(pgModels)
-//    def pg = pgInstance.related('deploymentconfig/pg-kbit-api-7a0574b')
     def pg = openshift.selector("deploymentconfigs/${getPgName()}")
-    pg.untilEach(1) { // We want a minimum of 1 build
-        echo "in the loop of each"
+    pg.untilEach(1) {
         echo  "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-        return 0//it.object().status.phase == "Complete"
+        return it.object().status.availableReplicas == 1
     }
+    echo "PG is ready!"
 }
 
 def buildImage() {
