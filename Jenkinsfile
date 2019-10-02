@@ -81,7 +81,7 @@ pipeline {
                             openshift.create(models)
                             def bc = openshift.selector("buildconfig/${getAppName()}")
                             def build = bc.startBuild()
-                            build.logs("-f")
+                            build.logs("-f --pod-running-timeout=60")
                         }
                     }
                 }
