@@ -27,11 +27,11 @@ def deployPg() {
 //    def pg = pgInstance.related('deploymentconfig/pg-kbit-api-7a0574b')
     def pg = openshift.selector("deploymentconfigs/${getPgName()}")
     echo pg
-//    pg.untilEach(1) { // We want a minimum of 1 build
+    pg.untilEach(1) { // We want a minimum of 1 build
 
 //        echo it.object()
-//        return 0//it.object().status.phase == "Complete"
-//    }
+        return 0//it.object().status.phase == "Complete"
+    }
 }
 
 def buildImage() {
