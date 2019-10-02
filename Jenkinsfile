@@ -23,14 +23,15 @@ def deployPg() {
             "-p", "POSTGRESQL_PASSWORD=${getPgName()}",
             "-p", "POSTGRESQL_DATABASE=${getPgName()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
-    def pgInstance = openshift.create(pgModels)
-    def pg = pgInstance.related('deploymentconfig/pg-kbit-api-7a0574b')
-//    def pg = openshift.selector("deploymentconfigs/${getPgName()}")
-    pg.untilEach(1) { // We want a minimum of 1 build
+    openshift.create(pgModels)
+//    def pg = pgInstance.related('deploymentconfig/pg-kbit-api-7a0574b')
+    def pg = openshift.selector("deploymentconfigs/${getPgName()}")
+    echo pg
+//    pg.untilEach(1) { // We want a minimum of 1 build
 
-        echo it.object()
-        return 0//it.object().status.phase == "Complete"
-    }
+//        echo it.object()
+//        return 0//it.object().status.phase == "Complete"
+//    }
 }
 
 def buildImage() {
