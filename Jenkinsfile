@@ -8,12 +8,20 @@ def getGitCommitShortHash() {
     return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
 }
 
+def getAppName() {
+    return "${env.NAME}-${getGitCommitShortHash()}"
+}
+
+def getPgName() {
+    return "pg-${getAppName()}"
+}
+
 def deployPg() {
     def pgModels = openshift.process("openshift//postgresql-ephemeral",
-            "-p", "DATABASE_SERVICE_NAME=${getAppName()}",
-            "-p", "POSTGRESQL_USER=${getAppName()}",
-            "-p", "POSTGRESQL_PASSWORD=${getAppName()}",
-            "-p", "POSTGRESQL_DATABASE=${getAppName()}")
+            "-p", "DATABASE_SERVICE_NAME=${getPgName()}",
+            "-p", "POSTGRESQL_USER=${getPgName()}",
+            "-p", "POSTGRESQL_PASSWORD=${getPgName()}",
+            "-p", "POSTGRESQL_DATABASE=${getPgName()}")
     openshift.create(pgModels)
 }
 
@@ -33,10 +41,6 @@ def buildImage() {
     build.logs("-f --pod-running-timeout=60s")
 }
 
-
-def getAppName() {
-    return "${env.NAME}-${getGitCommitShortHash()}"
-}
 
 pipeline {
     agent {
@@ -73,7 +77,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            buildImage()
+//                            buildImage()
                         }
                     }
                 }
