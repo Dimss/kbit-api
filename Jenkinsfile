@@ -22,7 +22,13 @@ def deployPg() {
             "-p", "POSTGRESQL_USER=${getPgName()}",
             "-p", "POSTGRESQL_PASSWORD=${getPgName()}",
             "-p", "POSTGRESQL_DATABASE=${getPgName()}")
+    echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
     openshift.create(pgModels)
+    pgModels.untilEach(1) { // We want a minimum of 1 build
+
+        echo it.object()
+        return 0//it.object().status.phase == "Complete"
+    }
 }
 
 def buildImage() {
@@ -77,7 +83,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            buildImage()
+//                            buildImage()
                         }
                     }
                 }
