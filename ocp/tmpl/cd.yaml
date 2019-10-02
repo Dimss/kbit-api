@@ -1,0 +1,49 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: app-is-bc
+message: kbit api template
+metadata:
+  name: "kbit-api-template"
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: kbit-api
+    labels:
+      app: kbit-api
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: kbit-api
+    template:
+      metadata:
+        labels:
+          app: kbit-api
+      spec:
+        containers:
+        - name: kbit-api
+          image: ${IMAGE}
+          env:
+          - name: ${SPRING_PROFILES_ACTIVE}
+            value: prod
+          - name: ${DB_NAME}
+            value: DB_IP
+          - name: ${DB_NAME}
+            value: DB_NAME
+          - name: ${DB_USER}
+            value: DB_USER
+          - name: ${DB_PASS}
+            value: DB_PASS
+          ports:
+          - containerPort: 8080
+parameters:
+- name: IMAGE
+  required: true
+- name: DB_NAME
+  required: true
+- name: DB_USER
+  required: true
+- name: DB_PASS
+  required: true

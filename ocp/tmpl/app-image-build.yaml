@@ -1,0 +1,53 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: app-is-bc
+message: S2I docker builder
+metadata:
+  name: "${IS_NAME}"
+objects:
+- kind: "BuildConfig"
+  apiVersion: "v1"
+  metadata:
+    name: "${IS_NAME}"
+  spec:
+    runPolicy: "Serial"
+    source:
+      git:
+        uri: "${GIT_REPO}"
+        ref: "master"
+    strategy:
+      sourceStrategy:
+        from:
+          kind: "ImageStreamTag"
+          name: "java:latest"
+          namespace: openshift
+    output:
+      to:
+        kind: "DockerImage"
+        name: "docker.io/dimssss/${IMAGE_NAME}:${IMAGE_TAG}"
+      pushSecret:
+        name: ${PUSH_SECRET}
+parameters:
+- description: Name for BC and IS
+  displayName: The name for the BC and IS
+  name: IS_NAME
+  required: true
+  value: kbit-api-s2i
+- description: Docker image name
+  displayName: Docker image name
+  name: IMAGE_NAME
+  required: true
+  value: "kbit-api"
+- description: Docker image tag
+  displayName: Docker image tag
+  name: IMAGE_TAG
+  required: true
+- description: GIT URL
+  displayName: The GIT repo URL
+  name: GIT_REPO
+  required: true
+  value: "https://github.com/Dimss/kbit-api"
+- name: PUSH_SECRET
+  required: true
+  value: "dimssss-docker-io"
