@@ -25,9 +25,8 @@ pipeline {
             steps {
                 script {
                     echo "Running static code analysis"
-//                    def scannerHome = tool 'SonarScanner 4.0'
                     withSonarQubeEnv('SonarQube1') {
-                        sh 'mvn clean package sonar:sonar'
+//                        sh 'mvn clean package sonar:sonar'
                     }
                 }
             }
@@ -45,17 +44,26 @@ pipeline {
 //                }
 //            }
 //        }
-//        stage("Build & push docker image ") {
-//            steps {
-//                script {
-//                    openshift.withCluster() {
-//                        openshift.withProject() {
-//                            echo "Deploying integration tests dependencies"
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        stage("Build & push docker image ") {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            def scmUrl = scm.getUserRemoteConfigs()[0].getUrl()
+                            echo "${scmUrl}"
+//                            def crTemplate = readFile('ocp/tmpl/app-image-build.yaml')
+//                            def models = openshift.process(crTemplate,
+//                                    "-p=IS_NAME=${size}",
+//                                    "-p=IMAGE_NAME=${appName}",
+//                                    "-p=IMAGE_TAG=${namespace}",
+//                                    "-p=GIT_REPO=${image}")
+//                            echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
+//                            openshift.create(models)
+                        }
+                    }
+                }
+            }
+        }
 //
 //        stage("Executing integration tests") {
 //            steps {
