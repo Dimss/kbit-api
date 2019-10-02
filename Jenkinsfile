@@ -28,7 +28,7 @@ def deployPg() {
     def pg = openshift.selector("deploymentconfigs/${getPgName()}")
     pg.untilEach(1) { // We want a minimum of 1 build
         echo "in the loop of each"
-        echo it.object().status
+        echo  "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
         return 0//it.object().status.phase == "Complete"
     }
 }
