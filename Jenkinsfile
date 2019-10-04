@@ -114,7 +114,7 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
 //                            deployPg()
-                            def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}}"
+                            def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}"
                             def pgName = getPgName()
                             deployApp(image, pgName, pgName, pgName)
                         }
