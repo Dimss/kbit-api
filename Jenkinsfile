@@ -113,7 +113,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            deployPg()
+//                            deployPg()
                             def image = "${env.REGISTRY_NAME}/${evn.IMAGE_NAME}:${env.IMAGE_TAG}}"
                             def pgName = getPgName()
                             deployApp(image, pgName, pgName, pgName)
@@ -124,15 +124,15 @@ pipeline {
         }
     }
 
-    post {
-        failure {
-            script {
-                openshift.withCluster() {
-                    openshift.withProject() {
-                        sh "echo 'this is failure catch'"
-                    }
-                }
-            }
-        }
-    }
+//    post {
+//        failure {
+//            script {
+//                openshift.withCluster() {
+//                    openshift.withProject() {
+//                        sh "echo 'this is failure catch'"
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
