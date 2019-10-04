@@ -9,18 +9,18 @@ objects:
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
-    name: kbit-api
+    name: ${NAME}
     labels:
-      app: kbit-api
+      app: ${NAME}
   spec:
     replicas: 1
     selector:
       matchLabels:
-        app: kbit-api
+        app: ${NAME}
     template:
       metadata:
         labels:
-          app: kbit-api
+          app: ${NAME}
       spec:
         containers:
         - name: kbit-api
@@ -39,6 +39,8 @@ objects:
           ports:
           - containerPort: 8080
 parameters:
+- name: NAME
+  required: true
 - name: IMAGE
   required: true
 - name: DB_NAME

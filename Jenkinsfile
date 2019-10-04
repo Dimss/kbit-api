@@ -16,6 +16,24 @@ def getPgName() {
     return "pg-${getAppName()}"
 }
 
+def deployApp(image, dbName, dbUser, dbPass) {
+    def appTmpl = readFile('ocp/tmpl/kbit-app.yaml')
+    def appModels = openshift.process(appTmpl,
+            "-p=NAME=${getAppName()}",
+            "-p=IMAGE=${image}",
+            "-p=DB_NAME=${dbName}",
+            "-p=DB_USER=${dbUser}",
+            "-p=DB_PASS=${dbPass}")
+    echo "${JsonOutput.prettyPrint(JsonOutput.toJson(appModels))}"
+    openshift.create(appModels)
+    def app = openshift.selector("deployment/${getAppName()}")
+    app.untilEach(1) {
+        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+        return it.object().status.availableReplicas == 1
+    }
+    echo "App is ready!"
+}
+
 def deployPg() {
     def pgModels = openshift.process("openshift//postgresql-ephemeral",
             "-p", "DATABASE_SERVICE_NAME=${getPgName()}",
@@ -26,7 +44,7 @@ def deployPg() {
     openshift.create(pgModels)
     def pg = openshift.selector("deploymentconfigs/${getPgName()}")
     pg.untilEach(1) {
-        echo  "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
         return it.object().status.availableReplicas == 1
     }
     echo "PG is ready!"
@@ -62,7 +80,6 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             echo "Hello from ${openshift.cluster()}'s default project: ${openshift.project()}"
-
                         }
                     }
                 }
@@ -97,6 +114,9 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             deployPg()
+                            def image = "${env.REGISTRY_NAME}/${evn.IMAGE_NAME}:${env.IMAGE_TAG}}"
+                            def pgName = getPgName()
+                            deployApp(image, pgName, pgName, pgName)
                         }
                     }
                 }
