@@ -105,7 +105,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-//                            buildImage()
+                            buildImage()
                         }
                     }
                 }
@@ -118,9 +118,9 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             deployPg()
-//                            def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}"
-//                            def pgName = getPgName()
-//                            deployApp(image, pgName, pgName, pgName)
+                            def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}"
+                            def pgName = getPgName()
+                            deployApp(image, pgName, pgName, pgName)
                         }
                     }
                 }
