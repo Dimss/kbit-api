@@ -45,9 +45,11 @@ def deployPg() {
     def pg = openshift.selector("dc/${getPgName()}")
     timeout(3) {
         pg.watch {
-            echo "In loop"
-            echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+            it.withEach {
+                echo "In loop"
+                echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
 //            return it.object().status.availableReplicas == 1
+            }
         }
     }
     echo "PG is ready!"
