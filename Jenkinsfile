@@ -42,12 +42,12 @@ def deployPg() {
             "-p", "POSTGRESQL_DATABASE=${getPgName()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
     openshift.create(pgModels)
-    def pg = openshift.selector("pods", [name: getPgName()])
+    def pg = openshift.selector("dc/${getPgName()}")
     timeout(3) {
         pg.watch {
             echo "In loop"
             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-            return it.object().status.availableReplicas == 1
+//            return it.object().status.availableReplicas == 1
         }
     }
     echo "PG is ready!"
