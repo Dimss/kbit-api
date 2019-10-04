@@ -42,7 +42,7 @@ def deployPg() {
             "-p", "POSTGRESQL_DATABASE=${getPgName()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
     openshift.create(pgModels)
-    def pg = openshift.selector("rc/${getPgName()}")
+    def pg = openshift.selector("dc/${getPgName()}")
     timeout(3) {
         pg.watch {
 
