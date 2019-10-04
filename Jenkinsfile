@@ -45,6 +45,7 @@ def deployPg() {
     def pg = openshift.selector("deploymentconfigs/${getPgName()}")
     timeout(3) {
         pg.watch {
+            echo "In loop"
             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
             return it.object().status.availableReplicas == 1
         }
@@ -105,7 +106,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            buildImage()
+//                            buildImage()
                         }
                     }
                 }
@@ -118,9 +119,9 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             deployPg()
-                            def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}"
-                            def pgName = getPgName()
-                            deployApp(image, pgName, pgName, pgName)
+//                            def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}"
+//                            def pgName = getPgName()
+//                            deployApp(image, pgName, pgName, pgName)
                         }
                     }
                 }
