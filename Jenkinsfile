@@ -43,14 +43,18 @@ def deployPg() {
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
     openshift.create(pgModels)
     def pg = openshift.selector("deploymentconfigs/${getPgName()}")
-    pg.untilEach(1) {
-        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-        return it.object().status.availableReplicas == 1
+    timeout(3) {
+        pg.watch {
+            echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+            return it.object().status.availableReplicas == 1
+        }
     }
     echo "PG is ready!"
 }
 
 def buildImage() {
+    def bc = openshift.selector("buildconfig/${getAppName()}")
+    echo "=================== this is bc: ${bc} ==================="
     def bcTemplate = readFile('ocp/tmpl/s2i-bc.yaml')
     def models = openshift.process(bcTemplate,
             "-p=IS_NAME=${getAppName()}",
@@ -61,7 +65,7 @@ def buildImage() {
             "-p=GIT_REF=${getGitCommitHash()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
     openshift.create(models)
-    def bc = openshift.selector("buildconfig/${getAppName()}")
+    bc = openshift.selector("buildconfig/${getAppName()}")
     def build = bc.startBuild()
     build.logs("-f --pod-running-timeout=60s")
 }
