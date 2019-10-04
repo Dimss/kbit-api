@@ -48,7 +48,8 @@ def deployPg() {
 
             echo "In loop"
             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-            return it.object().status.availableReplicas == 1
+            return false
+//            return it.object().status.readyReplicas == 1 || it.object().status.unavailableReplicas == 1
 
         }
     }
