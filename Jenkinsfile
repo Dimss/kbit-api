@@ -84,7 +84,15 @@ def runKbitApiIntegrationTests() {
     timeout(3) {
         testJob.untilEach(1) {
             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-            return it.object().status.completionTime != null
+            if (it.object().status.failed == 1) {
+                echo "INTEGRATION TESTS ARE FAILED!"
+                return true
+            }
+            if (it.object().status.succeeded == 1) {
+                echo "INTEGRATION TESTS ARE PASSED!"
+                return true
+            }
+
         }
     }
 
