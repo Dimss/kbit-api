@@ -2,10 +2,28 @@ apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: app-is-bc
-message: kbit api template
 metadata:
   name: "kbit-api-template"
 objects:
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${NAME}
+  spec:
+    to:
+      kind: Service
+      name: ${NAME}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${NAME}
+  spec:
+    selector:
+      app: ${NAME}
+    ports:
+    - name: http
+      port: 80
+      targetPort: 8080
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

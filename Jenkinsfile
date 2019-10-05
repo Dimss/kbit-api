@@ -16,6 +16,10 @@ def getPgName() {
     return "pg-${getAppName()}"
 }
 
+def getIntegrationTestsJobName() {
+    return "integration-tests-${getAppName()}"
+}
+
 def deployApp(image, dbName, dbUser, dbPass) {
     def appTmpl = readFile('ocp/tmpl/kbit-app.yaml')
     def appModels = openshift.process(appTmpl,
@@ -50,6 +54,22 @@ def deployPg() {
         }
     }
     echo "PG is ready!"
+}
+
+def runKbitApiIntegrationTests() {
+    def testsTmpl = readFile('ocp/tmpl/integration-tests.yaml')
+    def testModels = openshift.process(testsTmpl,
+            "-p=NAME=${getIntegrationTestsJobName()}",
+            "-p=KBIT_API=http://${getAppName()}")
+    echo "${JsonOutput.prettyPrint(JsonOutput.toJson(testModels))}"
+    openshift.create(testModels)
+    def testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
+    testJob.untilEach(1) {
+        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+        return false
+//        return it.object().status.availableReplicas == 1
+    }
+    echo "App is ready!"
 }
 
 def buildImage() {
@@ -121,6 +141,7 @@ pipeline {
                             def image = "${env.REGISTRY_NAME}/${env.IMAGE_NAME}:${getGitCommitShortHash()}"
                             def pgName = getPgName()
                             deployApp(image, pgName, pgName, pgName)
+                            runKbitApiIntegrationTests()
                         }
                     }
                 }

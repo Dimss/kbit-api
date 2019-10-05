@@ -1,0 +1,41 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: kbit-api-integration-tests
+message: kbit api integration test template
+metadata:
+  name: "kbit-api-integration-tests"
+objects:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: ${NAME}
+  spec:
+    parallelism: 1
+    completions: 1
+    activeDeadlineSeconds: 1800
+    backoffLimit: 1
+    template:
+      metadata:
+        labels:
+          app: ${NAME}
+      spec:
+        serviceAccountName: ${SA}
+        containers:
+        - name: "kbit-integration-tests"
+          image: "image-registry.openshift-image-registry.svc:5000/kbit-devops/kbit-integration-tests"
+          imagePullPolicy: Always
+          env:
+          - name: KBIT_API
+            value: ${KBIT_API}
+          - name: K8S_IN_CLUSTER
+            value: "true"
+        restartPolicy: OnFailure
+parameters:
+- name: NAME
+  required: true
+- name: KBIT_API
+  required: true
+- name: SA
+  required: true
+  value: kbit-integration-tests
