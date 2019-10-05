@@ -24,6 +24,7 @@ objects:
         containers:
         - name: "kbit-integration-tests"
           image: "image-registry.openshift-image-registry.svc:5000/kbit-devops/kbit-integration-tests"
+          command: ["bla"]
           imagePullPolicy: Always
           env:
           - name: KBIT_API

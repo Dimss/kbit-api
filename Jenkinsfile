@@ -81,11 +81,13 @@ def runKbitApiIntegrationTests() {
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(testModels))}"
     openshift.create(testModels)
     testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
-    testJob.untilEach(1) {
-        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-        return false
-//        return it.object().status.availableReplicas == 1
+    timeout(3) {
+        testJob.untilEach(1) {
+            echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+            return it.object().status.completionTime != null
+        }
     }
+
     echo "App is ready!"
 }
 
