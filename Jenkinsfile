@@ -69,15 +69,15 @@ def deployPg() {
 }
 
 def runKbitApiIntegrationTests() {
-    def testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
-    if (testJob.exists()) {
-        echo "The jobs/${getIntegrationTestsJobName()} exists, gonna delete the job and create a new one"
-        openshift.delete(testJob)
-    }
     def testsTmpl = readFile('ocp/tmpl/integration-tests.yaml')
     def testModels = openshift.process(testsTmpl,
             "-p=NAME=${getIntegrationTestsJobName()}",
             "-p=KBIT_API=http://${getAppName()}")
+    def testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
+    if (testJob.exists()) {
+        echo "The jobs/${getIntegrationTestsJobName()} exists, gonna delete the job and create a new one"
+        openshift.delete(testModels)
+    }
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(testModels))}"
     openshift.create(testModels)
     testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
@@ -95,8 +95,6 @@ def runKbitApiIntegrationTests() {
 
         }
     }
-
-    echo "App is ready!"
 }
 
 def buildImage() {
