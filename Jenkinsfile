@@ -74,20 +74,23 @@ def runKbitApiIntegrationTests() {
 
 def buildImage() {
     def bc = openshift.selector("buildconfig/${getAppName()}")
-    echo "=================== this is bc: ${bc} ==================="
-    def bcTemplate = readFile('ocp/tmpl/s2i-bc.yaml')
-    def models = openshift.process(bcTemplate,
-            "-p=IS_NAME=${getAppName()}",
-            "-p=REGISTRY_NAME=${env.REGISTRY_NAME}",
-            "-p=IMAGE_NAME=${env.IMAGE_NAME}",
-            "-p=IMAGE_TAG=${getGitCommitShortHash()}",
-            "-p=GIT_REPO=${scm.getUserRemoteConfigs()[0].getUrl()}",
-            "-p=GIT_REF=${getGitCommitHash()}")
-    echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
-    openshift.create(models)
-    bc = openshift.selector("buildconfig/${getAppName()}")
-    def build = bc.startBuild()
-    build.logs("-f --pod-running-timeout=60s")
+    if (!bc.exists()) {
+        def bcTemplate = readFile('ocp/tmpl/s2i-bc.yaml')
+        def models = openshift.process(bcTemplate,
+                "-p=IS_NAME=${getAppName()}",
+                "-p=REGISTRY_NAME=${env.REGISTRY_NAME}",
+                "-p=IMAGE_NAME=${env.IMAGE_NAME}",
+                "-p=IMAGE_TAG=${getGitCommitShortHash()}",
+                "-p=GIT_REPO=${scm.getUserRemoteConfigs()[0].getUrl()}",
+                "-p=GIT_REF=${getGitCommitHash()}")
+        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(models))}"
+        openshift.create(models)
+        bc = openshift.selector("buildconfig/${getAppName()}")
+        def build = bc.startBuild()
+        build.logs("-f --pod-running-timeout=60s")
+    } else {
+        echo "buildconfig/${getAppName()} exists, assuming image exists as well"
+    }
 }
 
 
