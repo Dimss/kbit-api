@@ -21,49 +21,66 @@ def getIntegrationTestsJobName() {
 }
 
 def deployApp(image, dbName, dbUser, dbPass) {
-    def appTmpl = readFile('ocp/tmpl/kbit-app.yaml')
-    def appModels = openshift.process(appTmpl,
-            "-p=NAME=${getAppName()}",
-            "-p=IMAGE=${image}",
-            "-p=DB_NAME=${dbName}",
-            "-p=DB_USER=${dbUser}",
-            "-p=DB_PASS=${dbPass}")
-    echo "${JsonOutput.prettyPrint(JsonOutput.toJson(appModels))}"
-    openshift.create(appModels)
     def app = openshift.selector("deployment/${getAppName()}")
-    app.untilEach(1) {
-        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
-        return it.object().status.availableReplicas == 1
-    }
-    echo "App is ready!"
-}
-
-def deployPg() {
-    def pgModels = openshift.process("openshift//postgresql-ephemeral",
-            "-p", "DATABASE_SERVICE_NAME=${getPgName()}",
-            "-p", "POSTGRESQL_USER=${getPgName()}",
-            "-p", "POSTGRESQL_PASSWORD=${getPgName()}",
-            "-p", "POSTGRESQL_DATABASE=${getPgName()}")
-    echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
-    openshift.create(pgModels)
-    def pgSelector = openshift.selector("dc/${getPgName()}")
-    timeout(3) {
-        pgSelector.watch {
+    if (!app.exists()) {
+        def appTmpl = readFile('ocp/tmpl/kbit-app.yaml')
+        def appModels = openshift.process(appTmpl,
+                "-p=NAME=${getAppName()}",
+                "-p=IMAGE=${image}",
+                "-p=DB_NAME=${dbName}",
+                "-p=DB_USER=${dbUser}",
+                "-p=DB_PASS=${dbPass}")
+        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(appModels))}"
+        openshift.create(appModels)
+        app = openshift.selector("deployment/${getAppName()}")
+        app.untilEach(1) {
             echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
             return it.object().status.availableReplicas == 1
         }
+        echo "App is ready!"
+    } else {
+        echo "deployment/${getAppName()} exists, gonna skip app deployment"
     }
-    echo "PG is ready!"
+
+}
+
+def deployPg() {
+    def pgSelector = openshift.selector("dc/${getPgName()}")
+    if (!pgSelector.exists()) {
+        def pgModels = openshift.process("openshift//postgresql-ephemeral",
+                "-p", "DATABASE_SERVICE_NAME=${getPgName()}",
+                "-p", "POSTGRESQL_USER=${getPgName()}",
+                "-p", "POSTGRESQL_PASSWORD=${getPgName()}",
+                "-p", "POSTGRESQL_DATABASE=${getPgName()}")
+        echo "${JsonOutput.prettyPrint(JsonOutput.toJson(pgModels))}"
+        openshift.create(pgModels)
+        pgSelector = openshift.selector("dc/${getPgName()}")
+        timeout(3) {
+            pgSelector.watch {
+                echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
+                return it.object().status.availableReplicas == 1
+            }
+        }
+        echo "PG is ready!"
+    } else {
+        echo "dc/${getPgName()} already deployed, skipping PG deployment"
+    }
+
 }
 
 def runKbitApiIntegrationTests() {
+    def testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
+    if (testJob.exists()) {
+        echo "The jobs/${getIntegrationTestsJobName()} exists, gonna delete the job and create a new one"
+        openshift.delete(testJob)
+    }
     def testsTmpl = readFile('ocp/tmpl/integration-tests.yaml')
     def testModels = openshift.process(testsTmpl,
             "-p=NAME=${getIntegrationTestsJobName()}",
             "-p=KBIT_API=http://${getAppName()}")
     echo "${JsonOutput.prettyPrint(JsonOutput.toJson(testModels))}"
     openshift.create(testModels)
-    def testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
+    testJob = openshift.selector("jobs/${getIntegrationTestsJobName()}")
     testJob.untilEach(1) {
         echo "${JsonOutput.prettyPrint(JsonOutput.toJson(it.object()))}"
         return false
