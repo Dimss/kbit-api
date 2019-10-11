@@ -142,7 +142,7 @@ pipeline {
                 script {
                     echo "Running static code analysis"
                     withSonarQubeEnv('SonarQube1') {
-//                        sh 'mvn clean package sonar:sonar'
+                        sh 'mvn clean package sonar:sonar'
                     }
                 }
             }
