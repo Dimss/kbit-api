@@ -23,7 +23,7 @@ objects:
         serviceAccountName: ${SA}
         containers:
         - name: "kbit-integration-tests"
-          image: "image-registry.openshift-image-registry.svc:5000/kbit-devops/kbit-integration-tests"
+          image: "docker.io/dimssss/kbit-integration-tests:0.1"
           imagePullPolicy: Always
           env:
           - name: KBIT_API
