@@ -1,7 +1,6 @@
 package rh.local.kbit.config;
 
 
-
 import rh.local.kbit.security.CustomUserDetailsService;
 import rh.local.kbit.security.JwtAuthenticationEntryPoint;
 import rh.local.kbit.security.JwtAuthenticationFilter;
@@ -71,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/v1/auth/**","/v1/ping")
+                .antMatchers("/actuator/**", "/v1/auth/**", "/v1/ping", "/actuator/prometheus")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
