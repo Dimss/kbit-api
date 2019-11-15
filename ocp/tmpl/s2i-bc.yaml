@@ -40,6 +40,7 @@ parameters:
   value: "kbit-api"
 - name: IMAGE_TAG
   required: true
+  value: latest
 - name: GIT_REPO
   required: true
   value: "https://github.com/Dimss/kbit-api"

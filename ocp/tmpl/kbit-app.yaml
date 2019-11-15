@@ -43,6 +43,7 @@ objects:
         containers:
         - name: kbit-api
           image: ${IMAGE}
+          imagePullPolicy: Always
           env:
           - name: SPRING_PROFILES_ACTIVE
             value: prod
