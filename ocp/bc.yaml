@@ -18,8 +18,3 @@ spec:
       - name: "IMAGE_NAME"
         value: "kbit-api"
     type: JenkinsPipeline
-  triggers:
-  - generic:
-      allowEnv: true
-      secret: trigger-secret
-    type: Generic

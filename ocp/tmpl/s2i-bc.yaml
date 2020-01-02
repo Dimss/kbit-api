@@ -49,5 +49,5 @@ parameters:
   value: "master"
 - name: PUSH_SECRET
   required: true
-  value: "dimssss-docker-io"
+  value: "docker-io"
 

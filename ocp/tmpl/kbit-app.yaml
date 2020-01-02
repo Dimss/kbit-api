@@ -37,6 +37,8 @@ objects:
         app: ${NAME}
     template:
       metadata:
+        annotations:
+          prom_scarp: "true"
         labels:
           app: ${NAME}
       spec:
