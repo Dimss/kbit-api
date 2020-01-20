@@ -1,4 +1,4 @@
 cp -r /tmp/src/* ./
 ls -all
-#mvn package
+mvn package
 #ls -all
