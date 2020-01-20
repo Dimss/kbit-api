@@ -1,5 +1,4 @@
-ls -all
-cp /tmp/src ./
+cp -r /tmp/src ./
 ls -all
 #mvn package
 #ls -all
