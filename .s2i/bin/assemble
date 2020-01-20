@@ -1,2 +1,3 @@
+cd /tmp/src
 mvn package
 ls -all
