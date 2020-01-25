@@ -32,6 +32,10 @@ public class KbitApplication {
             u.setPassword(passwordEncoder.encode(u.getPassword()));
             u.setRoleName(RoleName.admin);
             userRepository.save(u);
+            // Comment for push
+
+
+
         }
 
     }
