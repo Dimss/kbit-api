@@ -1,5 +1,5 @@
-#cp -r /tmp/src/* ./
+cp -r /tmp/src/* ./
+cd /workspace/source
 ls -all
-sleep 3600
-#mvn package
-#ls -all
+mvn package
+ls -all
