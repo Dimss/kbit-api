@@ -148,7 +148,7 @@ pipeline {
             }
 
         }
-        stage("Build & push docker image ") {
+        stage("Build & push docker image") {
             steps {
                 script {
                     openshift.withCluster() {

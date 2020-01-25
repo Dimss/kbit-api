@@ -1,4 +1,5 @@
-cp -r /tmp/src/* ./
+#cp -r /tmp/src/* ./
 ls -all
-mvn package
+sleep 3600
+#mvn package
 #ls -all
