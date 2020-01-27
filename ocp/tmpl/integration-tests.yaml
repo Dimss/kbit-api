@@ -10,6 +10,8 @@ objects:
   kind: Job
   metadata:
     name: ${NAME}
+    labels:
+      app: ${NAME}
   spec:
     parallelism: 1
     completions: 1
