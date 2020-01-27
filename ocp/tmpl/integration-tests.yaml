@@ -31,7 +31,7 @@ objects:
           - name: K8S_IN_CLUSTER
             value: "true"
           - name: K8S_NS
-            value: "jenkins-pipelines"
+            value: "demopipe"
         restartPolicy: OnFailure
 parameters:
 - name: NAME
