@@ -18,6 +18,10 @@ def getPgName() {
 
 def getIntegrationTestsJobName() {
     return "integration-tests-${getAppName()}"
+
+
+
+
 }
 
 def deployApp(image, dbName, dbUser, dbPass) {
@@ -132,6 +136,7 @@ pipeline {
                     openshift.withCluster() {
                         openshift.withProject() {
                             echo "Hello from ${openshift.cluster()}'s default project: ${openshift.project()}"
+                            sh "mvn test"
                         }
                     }
                 }
